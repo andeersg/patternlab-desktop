@@ -1,4 +1,4 @@
-const fs = window.require('fs');
+import fs from 'fs';
 
 export function checkEmptyness(path) {
   console.log('Checking', path, 'for emptiness');
