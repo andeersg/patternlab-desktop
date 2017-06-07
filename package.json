@@ -49,6 +49,7 @@
         "electron-devtools-installer": "^2.0.1",
         "get-grunt-tasks": "^3.1.0",
         "get-gulp-tasks": "^4.0.0",
+        "prop-types": "^15.5.10",
         "react": "^15.4.1",
         "react-dom": "^15.4.1",
         "react-hot-loader": "^3.0.0-beta.6"
