@@ -1,14 +1,11 @@
 import React, { Component } from 'react';
-const { shell } = window.require('electron');
+import PropTypes from 'prop-types';
+import Project from './Project';
+
+const { shell } = require('electron');
 
 class ProjectList extends Component {
-  constructor() {
-    super();
-
-    this.openProjectFolder = this.openProjectFolder.bind(this);
-  }
-
-  openProjectFolder(item) {
+  static openFolder(item) {
     shell.showItemInFolder(item.path);
   }
 
@@ -16,23 +13,16 @@ class ProjectList extends Component {
     const projects = this.props.projects || [];
     return (
       <section className="projects">
-        {projects.length ? projects.map((item, id) => (
-          <article key={id} className="project">
-            <div className="project__top">
-              <h1>{item.title}</h1>
-              <div className="project__status"></div>
-            </div>
-            <div className="project__bottom">
-              <button className="button--icon">Start</button>
-              <button className="button--icon" onClick={() => { this.openProjectFolder(item); }}>Open</button>
-              <button className="button--icon">Configure</button>
-              <button className="button--icon">Delete</button>
-            </div>
-          </article>
-        )) : <p>No projects yet</p>}
+        {projects.length ? projects.map(item =>
+          <Project key={item.id} {...item} open={ProjectList.openFolder} />)
+          : <p>No projects yet</p>}
       </section>
     );
   }
 }
+
+ProjectList.propTypes = {
+  projects: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+};
 
 export default ProjectList;

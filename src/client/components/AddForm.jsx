@@ -1,8 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import shortid from 'shortid';
 
 const { dialog } = require('electron').remote;
-const { checkEmptyness } = require('../utils/fileHelper.js');
+const { checkEmptyness, validateProject } = require('../utils/fileHelper.js');
 
 class AddForm extends React.Component {
   constructor() {
@@ -13,7 +14,6 @@ class AddForm extends React.Component {
     this.saveProject = this.saveProject.bind(this);
 
     this.state = {
-      title: '',
       path: '',
       project_type: 'gulp',
       clean: true,
@@ -24,10 +24,22 @@ class AddForm extends React.Component {
     dialog.showOpenDialog({ properties: ['openDirectory', 'createDirectory'] }, (folder) => {
       if (Array.isArray(folder)) {
         const empty = checkEmptyness(folder[0]);
-        this.setState({
+        const data = {
           path: folder[0],
           clean: empty,
-        });
+          id: shortid.generate(),
+        };
+
+        this.setState(data);
+
+        if (!empty) {
+          const validProject = validateProject(folder[0]);
+          if (validProject) {
+            console.log('Project is valid, add it.');
+            this.setState({ project_type: validProject });
+            this.saveProject();
+          }
+        }
       }
     });
   }
@@ -46,27 +58,11 @@ class AddForm extends React.Component {
   }
 
   render() {
-    // Step 1: Add a project name
-    // Step 2: Select a folder
-    // Step 3: Select platform (or skip it)
-    // Step 4: Progress bar and finish
-
     const data = JSON.stringify(this.state, null, 2);
 
     return (
       <section className="adding">
         <div className="adding__form">
-          <div className="element">
-            <label htmlFor="title" className="element__label">Project name</label>
-            <input
-              type="text"
-              className="element__input"
-              id="title"
-              name="title"
-              onChange={this.formChange}
-            />
-          </div>
-
           {this.state.clean ?
             <div className="chooser">
               <div className={this.state.project_type === 'gulp' ? 'chooser__item chooser__item--selected' : 'chooser__item'}>
