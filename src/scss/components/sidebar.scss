@@ -1,0 +1,29 @@
+.sidebar {
+  width: 200px;
+  height: 100vh;
+  position: fixed;
+  background-color: #EEE;
+  top: 0;
+  transition: transform 0.3s ease;
+  z-index: 603;
+
+  &--left {
+    left: 0;
+    transform: translateX(-100%);
+  }
+
+  &--right {
+    right: 0;
+    transform: translateX(100%);
+  }
+
+  &--open {
+    transform: translateX(0%);
+  }
+
+  &__close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+  }
+}
