@@ -1,10 +1,8 @@
 import React, { Component } from 'react';
 import Config from 'electron-config';
-// import Nav from '../components/Nav.jsx';
 import ProjectList from '../components/ProjectList.jsx';
 import Empty from '../components/Empty.jsx';
 import Sidebar from '../components/Sidebar.jsx';
-// import AddForm from '../components/AddForm.jsx';
 import { packageManagerIsInstalled, addProject } from '../utils/fileHelper.js';
 import DownloadNode from '../components/DownloadNode.jsx';
 import Modal from '../components/Modal';
@@ -18,22 +16,11 @@ const config = new Config({
 
 class NewApp extends Component {
 
-  static addProject() {
-    addProject()
-      .then((object) => {
-        // Store object.
-        console.log(object);
-      })
-      .catch((error) => {
-        // Error handling.
-        console.error(error);
-      });
-  }
-
   constructor() {
     super();
 
     this.openDrawer = this.openDrawer.bind(this);
+    this.addProject = this.addProject.bind(this);
 
     this.state = {
       showAddDialog: false,
@@ -41,7 +28,6 @@ class NewApp extends Component {
       loaded: false,
       packageManagerIsInstalled: true,
       showProjectList: false,
-      addPath: false,
     };
     // @TODO Update config with current project to easily set it on start.
   }
@@ -60,6 +46,24 @@ class NewApp extends Component {
     this.setState({
       showProjectList: !this.state.showProjectList,
     });
+  }
+
+  addProject() {
+    const self = this;
+    addProject()
+      .then((object) => {
+        // Store object.
+        const projects = this.state.projects;
+        projects.push(object);
+        self.setState({
+          projects,
+        });
+        config.set('projects', projects);
+      })
+      .catch((error) => {
+        // Error handling.
+        console.error(error);
+      });
   }
 
   render() {
@@ -88,7 +92,7 @@ class NewApp extends Component {
                 ? <button className="project-chooser" onClick={this.openDrawer}>switch</button>
                 : ''
               }
-              <button className="" onClick={this.constructor.addProject}>Add new</button>
+              <button className="" onClick={this.addProject}>Add new</button>
             </h1>
           </header>
           <section className="content area">
