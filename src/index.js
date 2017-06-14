@@ -13,8 +13,14 @@ if (isDevMode) enableLiveReload({ strategy: 'react-hmr' });
 const createWindow = async () => {
   // Create the browser window.
   mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 700,
+    height: 400,
+    resizable: true,
+    fullscreenable: false,
+    backgroundColor: '#29ABE2',
+    center: true,
+    title: 'PatternLab Desktop',
+    titleBarStyle: 'hidden',
     webPreferences: {
       experimentalFeatures: true,
     },
@@ -26,7 +32,7 @@ const createWindow = async () => {
   // Open the DevTools.
   if (isDevMode) {
     await installExtension(REACT_DEVELOPER_TOOLS);
-    mainWindow.webContents.openDevTools();
+    // mainWindow.webContents.openDevTools();
   }
 
   // Emitted when the window is closed.
