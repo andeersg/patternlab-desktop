@@ -44,6 +44,8 @@
         }
     },
     "dependencies": {
+        "classnames": "^2.2.5",
+        "command-exists": "^1.2.2",
         "electron-compile": "^6.4.1",
         "electron-config": "^1.0.0",
         "electron-devtools-installer": "^2.0.1",
