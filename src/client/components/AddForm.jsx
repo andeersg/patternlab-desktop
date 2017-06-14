@@ -16,7 +16,7 @@ class AddForm extends React.Component {
     this.state = {
       path: '',
       project_type: 'gulp',
-      clean: true,
+      clean: false,
     };
   }
 
@@ -59,6 +59,11 @@ class AddForm extends React.Component {
 
   render() {
     const data = JSON.stringify(this.state, null, 2);
+
+    // Don't render popup before we need feedback.
+    if (!this.state.clean) {
+      return null;
+    }
 
     return (
       <section className="adding">

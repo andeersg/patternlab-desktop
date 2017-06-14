@@ -1,10 +1,12 @@
 import fs from 'fs';
 import commandExists from 'command-exists';
+import shortid from 'shortid';
+
+const { dialog } = require('electron').remote;
 
 export function checkEmptyness(path) {
-  console.log('Checking', path, 'for emptiness');
   const files = fs.readdirSync(path);
-  console.log(files);
+
   if (files.length === 0) {
     return true;
   }
@@ -34,11 +36,9 @@ export function validateProject(path) {
   }
 
   if (requiredFilesPresent && projectType) {
-    console.log('All good, this looks like a patternlab project.');
     return projectType;
   }
 
-  console.log('Hm, dis does not look like a PL Project.');
   return false;
 }
 
@@ -47,4 +47,54 @@ export function validateProject(path) {
  */
 export function packageManagerIsInstalled() {
   return commandExists('npm');
+}
+
+function promptUser() {
+  return new Promise((resolve, reject) => {
+    dialog.showOpenDialog({ properties: ['openDirectory', 'createDirectory'] }, (folder) => {
+      if (Array.isArray(folder)) {
+        resolve(folder[0]);
+      } else {
+        reject('No folder selected');
+      }
+    });
+  });
+}
+
+export function addProject(path = false) {
+  return new Promise((resolve) => {
+    if (path) {
+      // Check path.
+      return resolve(path);
+    }
+
+    return resolve(false);
+  })
+  .then((folder = false) => {
+    if (!folder) {
+      return promptUser();
+    }
+    return folder;
+  })
+  .then((folder) => {
+    const projectObject = {};
+    const empty = checkEmptyness(folder);
+    projectObject.status = empty;
+    projectObject.id = shortid.generate();
+
+    if (!empty) {
+      const validProject = validateProject(folder);
+      if (validProject) {
+        projectObject.type = validProject;
+      } else {
+        throw new Error('Invalid project');
+      }
+    }
+
+    projectObject.path = folder;
+    projectObject.name = folder.substr(folder.lastIndexOf('/') + 1);
+    projectObject.added = Date.now();
+
+    return projectObject;
+  });
 }
