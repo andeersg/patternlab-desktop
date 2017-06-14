@@ -4,7 +4,7 @@ import Nav from '../components/Nav.jsx';
 import ProjectList from '../components/ProjectList.jsx';
 import Empty from '../components/Empty.jsx';
 import AddForm from '../components/AddForm.jsx';
-
+import { packageManagerIsInstalled } from '../utils/fileHelper.js';
 
 const config = new Config({
   defaults: {
@@ -21,10 +21,22 @@ class App extends Component {
     this.state = {
       showAddDialog: false,
       projects: config.get('projects'),
+      loaded: false,
+      packageManagerIsInstalled: true,
     };
     this.addNew = this.addNew.bind(this);
     this.hideModal = this.hideModal.bind(this);
     this.submitData = this.submitData.bind(this);
+  }
+
+  componentDidMount() {
+    packageManagerIsInstalled()
+    .catch(() => {
+      // @TODO Show warning if npm command is missing.
+      this.setState({
+        packageManagerIsInstalled: false,
+      });
+    });
   }
 
   addNew(e) {

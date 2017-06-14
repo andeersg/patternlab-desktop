@@ -13,16 +13,26 @@ class ProjectList extends Component {
     const projects = this.props.projects || [];
     return (
       <section className="projects">
-        {projects.length ? projects.map(item =>
-          <Project key={item.id} {...item} open={ProjectList.openFolder} />)
+        {projects.length ? projects.map(item => (
+          <Project
+            key={item.id}
+            {...item}
+            open={ProjectList.openFolder}
+            compact={this.props.compact}
+          />))
           : <p>No projects yet</p>}
       </section>
     );
   }
 }
 
+ProjectList.defaultProps = {
+  compact: false,
+};
+
 ProjectList.propTypes = {
   projects: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  compact: PropTypes.bool,
 };
 
 export default ProjectList;

@@ -1,4 +1,5 @@
 import fs from 'fs';
+import commandExists from 'command-exists';
 
 export function checkEmptyness(path) {
   console.log('Checking', path, 'for emptiness');
@@ -39,4 +40,11 @@ export function validateProject(path) {
 
   console.log('Hm, dis does not look like a PL Project.');
   return false;
+}
+
+/**
+ * Returns a promise that throws an error if command is not found.
+ */
+export function packageManagerIsInstalled() {
+  return commandExists('npm');
 }

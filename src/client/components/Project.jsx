@@ -12,23 +12,30 @@ class Project extends Component {
           <h1>{folderName}</h1>
           <div className="project__status" />
         </div>
-        <div className="project__bottom">
-          <button className="button--icon">Start</button>
-          <button
-            className="button--icon"
-            onClick={() => { this.props.open(this.props.path); }}
-          >Open</button>
-          <button className="button--icon">Configure</button>
-          <button className="button--icon">Delete</button>
-        </div>
+        {!this.props.compact ?
+          <div className="project__bottom">
+            <button className="button--icon">Start</button>
+            <button
+              className="button--icon"
+              onClick={() => { this.props.open(this.props.path); }}
+            >Open</button>
+            <button className="button--icon">Configure</button>
+            <button className="button--icon">Delete</button>
+          </div>
+        : ''}
       </article>
     );
   }
 }
 
+Project.defaultProps = {
+  compact: false,
+};
+
 Project.propTypes = {
   path: PropTypes.string.isRequired,
   open: PropTypes.func.isRequired,
+  compact: PropTypes.bool,
 };
 
 export default Project;

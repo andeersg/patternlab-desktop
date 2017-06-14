@@ -66,10 +66,10 @@ class AddForm extends React.Component {
           {this.state.clean ?
             <div className="chooser">
               <div className={this.state.project_type === 'gulp' ? 'chooser__item chooser__item--selected' : 'chooser__item'}>
-                <img src="images/gulp.svg" alt="" id="gulp" onClick={this.selectProject} />
+                <button id="gulp" onClick={this.selectProject}>Gulp</button>
               </div>
               <div className={this.state.project_type === 'grunt' ? 'chooser__item chooser__item--selected' : 'chooser__item'}>
-                <img src="images/grunt.svg" alt="" id="grunt" onClick={this.selectProject} />
+                <button id="grunt" onClick={this.selectProject}>Grunt</button>
               </div>
             </div>
           : <p>We should verify the project is patternlab</p>}
@@ -77,15 +77,13 @@ class AddForm extends React.Component {
 
           <button className="save" onClick={this.saveProject}>Save</button>
 
-          <div className="progress-wrapper">
-            <div className="progress-page 1"></div>
-            <div className="progress-page 2"></div>
-            <div className="progress-page 3"></div>
-            <div className="progress-page 4"></div>
-          </div>
-
         </div>
-        <div className="adding__backdrop" onClick={this.props.hideOverlay} />
+        <div
+          className="adding__backdrop"
+          role="button"
+          tabIndex="0"
+          onClick={this.props.hideOverlay}
+        />
       </section>
     );
   }
