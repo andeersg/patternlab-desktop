@@ -19,6 +19,7 @@ class ProjectList extends Component {
             {...item}
             open={ProjectList.openFolder}
             compact={this.props.compact}
+            select={this.props.select}
           />))
           : <p>No projects yet</p>}
       </section>
@@ -33,6 +34,7 @@ ProjectList.defaultProps = {
 ProjectList.propTypes = {
   projects: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   compact: PropTypes.bool,
+  select: PropTypes.func.isRequired,
 };
 
 export default ProjectList;

@@ -7,7 +7,7 @@ class Project extends Component {
     const folderName = this.props.path.substr(this.props.path.lastIndexOf('/') + 1);
 
     return (
-      <article className="project">
+      <article className="project" onClick={e => this.props.select(this.props.id, e)}>
         <div className="project__top">
           <h1>{folderName}</h1>
           <div className="project__status" />
@@ -36,6 +36,8 @@ Project.propTypes = {
   path: PropTypes.string.isRequired,
   open: PropTypes.func.isRequired,
   compact: PropTypes.bool,
+  select: PropTypes.func.isRequired,
+  id: PropTypes.string.isRequired,
 };
 
 export default Project;

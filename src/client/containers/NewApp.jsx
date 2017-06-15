@@ -21,13 +21,22 @@ class NewApp extends Component {
 
     this.openDrawer = this.openDrawer.bind(this);
     this.addProject = this.addProject.bind(this);
+    this.selectProject = this.selectProject.bind(this);
+
+    const projects = config.get('projects');
+    let currentId = config.get('currentId', false);
+
+    if (!currentId) {
+      currentId = projects[0].id;
+    }
 
     this.state = {
       showAddDialog: false,
-      projects: config.get('projects'),
+      projects,
       loaded: false,
       packageManagerIsInstalled: true,
       showProjectList: false,
+      currentId,
     };
     // @TODO Update config with current project to easily set it on start.
   }
@@ -48,6 +57,13 @@ class NewApp extends Component {
     });
   }
 
+  selectProject(id) {
+    this.setState({
+      currentId: id,
+    });
+    config.set('currentId', id);
+  }
+
   addProject() {
     const self = this;
     addProject()
@@ -62,6 +78,7 @@ class NewApp extends Component {
       })
       .catch((error) => {
         // Error handling.
+        // @TODO Display this error somewhere.
         console.error(error);
       });
   }
@@ -73,12 +90,10 @@ class NewApp extends Component {
     // List of projects.
     const projects = this.state.projects;
 
-    // The current selected project.
-    const project = projects[this.state.selectedProject ? this.state.selectedProject : 0];
+    // Get the current project.
+    const project = projects.find(item => item.id === this.state.currentId);
 
-    // Extract folder name.
-    const projectName = project.path.substr(project.path.lastIndexOf('/') + 1);
-
+    // Should we display that warning.
     const showDownloadModal = !this.state.packageManagerIsInstalled;
 
     return (
@@ -87,7 +102,7 @@ class NewApp extends Component {
         <div className="leftside">
           <header className="header area">
             <h1>
-              {haveProjects ? projectName : 'Patternlab'}
+              {haveProjects ? project.name : 'Patternlab'}
               {(haveProjects && projects.length > 1)
                 ? <button className="project-chooser" onClick={this.openDrawer}>switch</button>
                 : ''
@@ -117,7 +132,11 @@ class NewApp extends Component {
           open={this.state.showProjectList}
           close={() => { this.setState({ showProjectList: false }); }}
         >
-          <ProjectList projects={projects} compact />
+          <ProjectList
+            projects={projects}
+            select={this.selectProject}
+            compact
+          />
         </Sidebar>
       </div>
     );
