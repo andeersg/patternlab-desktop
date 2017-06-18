@@ -1,27 +1,26 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import Project from './Project';
-
-const { shell } = require('electron');
 
 class ProjectList extends Component {
-  static openFolder(item) {
-    shell.showItemInFolder(item.path);
-  }
 
   render() {
+    // onClick={e => this.props.select(this.props.id, e)}
+
     const projects = this.props.projects || [];
     return (
       <section className="projects">
-        {projects.length ? projects.map(item => (
-          <Project
-            key={item.id}
-            {...item}
-            open={ProjectList.openFolder}
-            compact={this.props.compact}
-            select={this.props.select}
-          />))
-          : <p>No projects yet</p>}
+        <ul className="menu">
+          {projects.length ? projects.map(item => (
+            <li key={item.id}><span
+              className="menu__item"
+              key={item.id}
+              tabIndex="0"
+              role="button"
+              onClick={e => this.props.select(item.id, e)}
+            >{item.name}</span></li>
+            ))
+            : <p>No projects yet</p>}
+        </ul>
       </section>
     );
   }
@@ -33,7 +32,6 @@ ProjectList.defaultProps = {
 
 ProjectList.propTypes = {
   projects: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-  compact: PropTypes.bool,
   select: PropTypes.func.isRequired,
 };
 

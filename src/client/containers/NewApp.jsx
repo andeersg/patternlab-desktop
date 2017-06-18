@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Config from 'electron-config';
 import ProjectList from '../components/ProjectList.jsx';
+import Project from '../components/Project.jsx';
 import Empty from '../components/Empty.jsx';
 import Sidebar from '../components/Sidebar.jsx';
 import { packageManagerIsInstalled, addProject } from '../utils/fileHelper.js';
@@ -15,7 +16,6 @@ const config = new Config({
 
 
 class NewApp extends Component {
-
   constructor() {
     super();
 
@@ -70,10 +70,16 @@ class NewApp extends Component {
       .then((object) => {
         // Store object.
         const projects = this.state.projects;
+        const updatedState = {};
+
+        if (projects.length === 0) {
+          updatedState.currentId = object.id;
+          config.set('currentId', object.id);
+        }
+
         projects.push(object);
-        self.setState({
-          projects,
-        });
+        updatedState.projects = projects;
+        self.setState(updatedState);
         config.set('projects', projects);
       })
       .catch((error) => {
@@ -104,28 +110,17 @@ class NewApp extends Component {
             <h1>
               {haveProjects ? project.name : 'Patternlab'}
               {(haveProjects && projects.length > 1)
-                ? <button className="project-chooser" onClick={this.openDrawer}>switch</button>
+                ? <button className="" onClick={this.openDrawer}>switch</button>
                 : ''
               }
               <button className="" onClick={this.addProject}>Add new</button>
             </h1>
           </header>
           <section className="content area">
-            {project ? <p>Project data</p> : <Empty /> }
+            {project ? <Project project={project} /> : <Empty /> }
           </section>
         </div>
-        {this.state.selectedProject ?
-          <div className="app__sidebar">
-            <div className="app__info area">
-              <ul className="list list--no">
-                <li>Project status</li>
-                <li>Created</li>
-                <li>Last build</li>
-                <li>Address</li>
-              </ul>
-            </div>
-          </div>
-        : ''}
+
         <Modal showModal={showDownloadModal} hide={() => {}}><DownloadNode /></Modal>
         <Sidebar
           location="left"
@@ -135,7 +130,6 @@ class NewApp extends Component {
           <ProjectList
             projects={projects}
             select={this.selectProject}
-            compact
           />
         </Sidebar>
       </div>

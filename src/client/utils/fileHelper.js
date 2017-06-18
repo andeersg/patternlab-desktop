@@ -1,6 +1,9 @@
 import fs from 'fs';
+import { spawnSync } from 'child_process';
 import commandExists from 'command-exists';
 import shortid from 'shortid';
+import getGulpTasks from 'get-gulp-tasks';
+import getGruntTasks from 'get-grunt-tasks';
 
 const { dialog } = require('electron').remote;
 
@@ -49,6 +52,22 @@ export function packageManagerIsInstalled() {
   return commandExists('npm');
 }
 
+function npmInstall(project) {
+  return new Promise((resolve, reject) => {
+    const args = [
+      'install',
+      '--prefix',
+      project.path,
+    ];
+
+    const npmSpawn = spawnSync('npm', args);
+    if (npmSpawn.status > 0) {
+      return reject('Unable to install dependencies.');
+    }
+    return resolve(project);
+  });
+}
+
 function promptUser() {
   return new Promise((resolve, reject) => {
     dialog.showOpenDialog({ properties: ['openDirectory', 'createDirectory'] }, (folder) => {
@@ -58,6 +77,23 @@ function promptUser() {
         reject('No folder selected');
       }
     });
+  });
+}
+
+function fetchTasks(project) {
+  const newProject = project;
+  return new Promise((resolve) => {
+    resolve(true);
+  })
+  .then(() => {
+    if (project.type === 'gulp') {
+      return getGulpTasks(project.path);
+    }
+    return getGruntTasks(project.path);
+  })
+  .then((tasks) => {
+    newProject.tasks = tasks;
+    return newProject;
   });
 }
 
@@ -96,5 +132,10 @@ export function addProject(path = false) {
     projectObject.added = Date.now();
 
     return projectObject;
+  })
+  .then(projectObject => npmInstall(projectObject))
+  .then(projectObject => fetchTasks(projectObject))
+  .catch((error) => {
+    console.log(error);
   });
 }
