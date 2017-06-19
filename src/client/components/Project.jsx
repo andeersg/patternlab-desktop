@@ -8,15 +8,12 @@ const { shell } = require('electron');
 // @TODO Check if npm install is executed.
 
 class Project extends Component {
-  static openFolder(item) {
-    shell.showItemInFolder(item);
-  }
-
   constructor() {
     super();
 
     this.startProject = this.startProject.bind(this);
     this.openExternal = this.openExternal.bind(this);
+    this.openFolder = this.openFolder.bind(this);
 
     this.state = {
       running: false,
@@ -32,6 +29,10 @@ class Project extends Component {
     }
   }
 
+  openFolder() {
+    shell.showItemInFolder(this.props.project.path);
+  }
+
   startProject() {
     const running = this.state.running;
     const args = [
@@ -45,13 +46,16 @@ class Project extends Component {
     } else {
       this.currentSpawn = spawn('npm', args);
       this.currentSpawn.stdout.on('data', (data) => {
-        console.log(`stdout: ${data}`);
+        // console.log(`stdout: ${data}`);
         // console.log(parseOutput(data.toString()));
         // @TODO Parse output and use it for gui.
         const extractedData = parseOutput(data.toString());
         if (extractedData) {
           const runtimeData = { ...this.state.runtime };
-          runtimeData[extractedData.key] = extractedData.value;
+          extractedData.forEach((item) => {
+            runtimeData[item.key] = item.value;
+          });
+
           this.setState({
             runtime: runtimeData,
           });
@@ -81,7 +85,7 @@ class Project extends Component {
         </pre>
 
         <div className="project__bottom">
-          <button className="button--icon" onClick={this.startProject}>Start</button>
+          <button className="button--icon" onClick={this.startProject}>{this.state.running ? 'Stop' : 'Start'}</button>
           <button
             className="button--icon"
             onClick={() => { Project.openFolder(project.path); }}
@@ -90,8 +94,6 @@ class Project extends Component {
             className="button--icon"
             onClick={() => { this.openExternal(); }}
           >Open browser</button>
-          <button className="button--icon">Delete</button>
-          {/* @NOTE Should we remove from app or delete folder? */}
         </div>
 
       </article>

@@ -1,11 +1,14 @@
 import fs from 'fs';
+import mv from 'mv';
 import { spawnSync } from 'child_process';
 import commandExists from 'command-exists';
 import shortid from 'shortid';
 import getGulpTasks from 'get-gulp-tasks';
 import getGruntTasks from 'get-grunt-tasks';
+import request from 'request';
+import decompress from 'decompress';
 
-const { dialog } = require('electron').remote;
+const { dialog, app } = require('electron').remote;
 
 export function checkEmptyness(path) {
   const files = fs.readdirSync(path);
@@ -80,6 +83,52 @@ function promptUser() {
   });
 }
 
+function moveFilesToDestination(tempLocation, destinationFolder) {
+  const files = fs.readdirSync(tempLocation);
+  const filePromises = [];
+  files.forEach((file) => {
+    const filePromise = new Promise((resolve, reject) => {
+      mv(tempLocation + file, destinationFolder + file, (err) => {
+        if (err) {
+          return reject(err);
+        }
+        return resolve();
+      });
+    });
+
+    filePromises.push(filePromise);
+
+    return Promise.all(filePromises);
+  });
+}
+
+function downloadProject(service) {
+  let serviceLink = 'https://github.com/pattern-lab/edition-node-gulp/releases/download/v1.4.0/edition-node-gulp-1.4.0.zip';
+  if (service === 'grunt') {
+    serviceLink = 'https://github.com/pattern-lab/edition-node-grunt/archive/v1.2.0.zip';
+  }
+
+  const ts = Date.now();
+  const tempPath = `${app.getPath('temp')}patternlab-${ts}.zip`;
+  return new Promise((resolve, reject) => {
+    request(serviceLink)
+      .pipe(fs.createWriteStream(tempPath))
+      .on('close', () => {
+        resolve(tempPath);
+      })
+      .on('error', error => reject(error));
+  })
+  .then(path => decompress(path, `${app.getPath('temp')}patternlab-${ts}_extracted`))
+  .then(files => `${app.getPath('temp')}patternlab-${ts}_extracted/${files[0].path}`);
+}
+
+function saveProjectFiles(project) {
+  return downloadProject(project.type)
+  .then(downloadedPath => moveFilesToDestination(downloadedPath, `${project.path}/`))
+  .then(() => project);
+}
+
+
 function fetchTasks(project) {
   const newProject = project;
   return new Promise((resolve) => {
@@ -118,6 +167,10 @@ export function addProject(path = false) {
     projectObject.status = empty;
     projectObject.id = shortid.generate();
 
+    projectObject.path = folder;
+    projectObject.name = folder.substr(folder.lastIndexOf('/') + 1);
+    projectObject.added = Date.now();
+
     if (!empty) {
       const validProject = validateProject(folder);
       if (validProject) {
@@ -125,13 +178,13 @@ export function addProject(path = false) {
       } else {
         throw new Error('Invalid project');
       }
+      return projectObject;
     }
 
-    projectObject.path = folder;
-    projectObject.name = folder.substr(folder.lastIndexOf('/') + 1);
-    projectObject.added = Date.now();
+    // @TODO For v1 we just use Gulp.
+    projectObject.type = 'gulp';
 
-    return projectObject;
+    return saveProjectFiles(projectObject);
   })
   .then(projectObject => npmInstall(projectObject))
   .then(projectObject => fetchTasks(projectObject))
