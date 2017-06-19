@@ -46,15 +46,18 @@
     "dependencies": {
         "classnames": "^2.2.5",
         "command-exists": "^1.2.2",
+        "decompress": "^4.2.0",
         "electron-compile": "^6.4.1",
         "electron-config": "^1.0.0",
         "electron-devtools-installer": "^2.0.1",
         "get-grunt-tasks": "^3.1.0",
         "get-gulp-tasks": "^4.0.0",
+        "mv": "^2.1.1",
         "prop-types": "^15.5.10",
         "react": "^15.4.1",
         "react-dom": "^15.4.1",
         "react-hot-loader": "^3.0.0-beta.6",
+        "request": "^2.81.0",
         "shortid": "^2.2.8"
     },
     "devDependencies": {
