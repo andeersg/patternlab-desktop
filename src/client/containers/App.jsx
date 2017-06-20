@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
 import Config from 'electron-config';
-import Nav from '../components/Nav.jsx';
 import ProjectList from '../components/ProjectList.jsx';
+import Project from '../components/Project.jsx';
 import Empty from '../components/Empty.jsx';
-import AddForm from '../components/AddForm.jsx';
-import { packageManagerIsInstalled } from '../utils/fileHelper.js';
+import Sidebar from '../components/Sidebar.jsx';
+import { packageManagerIsInstalled, addProject } from '../utils/fileHelper.js';
+import DownloadNode from '../components/DownloadNode.jsx';
+import Modal from '../components/Modal';
 
 const config = new Config({
   defaults: {
@@ -13,20 +15,30 @@ const config = new Config({
 });
 
 
-class App extends Component {
-
+class NewApp extends Component {
   constructor() {
     super();
 
+    this.openDrawer = this.openDrawer.bind(this);
+    this.addProject = this.addProject.bind(this);
+    this.selectProject = this.selectProject.bind(this);
+
+    const projects = config.get('projects');
+    let currentId = config.get('currentId', false);
+
+    if (!currentId) {
+      currentId = projects[0].id;
+    }
+
     this.state = {
       showAddDialog: false,
-      projects: config.get('projects'),
+      projects,
       loaded: false,
       packageManagerIsInstalled: true,
+      showProjectList: false,
+      currentId,
     };
-    this.addNew = this.addNew.bind(this);
-    this.hideModal = this.hideModal.bind(this);
-    this.submitData = this.submitData.bind(this);
+    // @TODO Update config with current project to easily set it on start.
   }
 
   componentDidMount() {
@@ -39,48 +51,96 @@ class App extends Component {
     });
   }
 
-  addNew(e) {
-    e.preventDefault();
-
+  openDrawer() {
     this.setState({
-      showAddDialog: true,
+      showProjectList: !this.state.showProjectList,
     });
   }
 
-  hideModal() {
+  selectProject(id) {
     this.setState({
-      showAddDialog: false,
+      currentId: id,
     });
+    config.set('currentId', id);
   }
 
-  submitData(data) {
-    const projects = this.state.projects;
-    projects.push(data);
-    config.set('projects', projects);
-    this.setState({
-      projects,
-    });
+  addProject() {
+    const self = this;
+    addProject()
+      .then((object) => {
+        // Store object.
+        const projects = this.state.projects;
+        const updatedState = {};
+
+        if (projects.length === 0) {
+          updatedState.currentId = object.id;
+          config.set('currentId', object.id);
+        }
+
+        projects.push(object);
+        updatedState.projects = projects;
+        self.setState(updatedState);
+        config.set('projects', projects);
+      })
+      .catch((error) => {
+        // Error handling.
+        // @TODO Display this error somewhere.
+        console.error(error);
+      });
   }
 
   render() {
+    // Nice to know if we have projects or not.
+    const haveProjects = this.state.projects.length > 0;
+
+    // List of projects.
     const projects = this.state.projects;
 
-    const mainContent = <Empty />;
+    // Get the current project.
+    const project = projects.find(item => item.id === this.state.currentId);
 
+    // Should we display that warning.
+    const showDownloadModal = !this.state.packageManagerIsInstalled;
 
     return (
-      <div className="spa">
-        <div className="spa__content">
-          {mainContent}
-          {this.state.showAddDialog ? <AddForm hideOverlay={this.hideModal} submitData={this.submitData} /> : ''}
+      <div className="app">
+        <div className="dragarea" />
+        <div className="leftside">
+          <header className="header area">
+            <h1>
+              {haveProjects ? project.name : 'Patternlab'}
+              {(haveProjects && projects.length > 1)
+                ? <button className="" onClick={this.openDrawer}>switch</button>
+                : ''
+              }
+              <button className="" onClick={this.addProject}>Add new</button>
+            </h1>
+          </header>
+          <section className="content area">
+            {project ? <Project project={project} /> : <Empty /> }
+          </section>
         </div>
-        <div className="panel">
-          <ProjectList projects={projects} />
-          <Nav addNew={this.addNew} />
-        </div>
+
+        <Modal showModal={showDownloadModal} hide={() => {}}><DownloadNode /></Modal>
+        <Sidebar
+          location="left"
+          open={this.state.showProjectList}
+          close={() => { this.setState({ showProjectList: false }); }}
+        >
+          <ProjectList
+            projects={projects}
+            select={this.selectProject}
+          />
+        </Sidebar>
       </div>
     );
   }
 }
 
-export default App;
+export default NewApp;
+
+// @TODO Add a project chooser.
+// @TODO Figure out what to use main area for.
+// @TODO We can have buttons for Watch(start), Build, Open static version in browser,
+// open finder, configure, delete.
+// @TODO Add a modal component.
