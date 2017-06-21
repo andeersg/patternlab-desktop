@@ -4,15 +4,14 @@ import PropTypes from 'prop-types';
 class ProjectList extends Component {
 
   render() {
-    // onClick={e => this.props.select(this.props.id, e)}
-
     const projects = this.props.projects || [];
+
     return (
       <section className="projects">
         <ul className="menu">
           {projects.length ? projects.map(item => (
             <li key={item.id}><span
-              className="menu__item"
+              className={`menu__item ${this.props.current === item.id ? 'menu__item--active' : ''}`}
               key={item.id}
               tabIndex="0"
               role="button"
@@ -27,12 +26,13 @@ class ProjectList extends Component {
 }
 
 ProjectList.defaultProps = {
-  compact: false,
+  current: false,
 };
 
 ProjectList.propTypes = {
   projects: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   select: PropTypes.func.isRequired,
+  current: PropTypes.string,
 };
 
 export default ProjectList;

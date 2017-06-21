@@ -8,6 +8,8 @@ import { packageManagerIsInstalled, addProject } from '../utils/fileHelper.js';
 import DownloadNode from '../components/DownloadNode.jsx';
 import Modal from '../components/Modal';
 
+const debug = require('debug')('pl');
+
 const config = new Config({
   defaults: {
     projects: [],
@@ -90,6 +92,7 @@ class NewApp extends Component {
   }
 
   render() {
+    debug('Render debugging');
     // Nice to know if we have projects or not.
     const haveProjects = this.state.projects.length > 0;
 
@@ -104,22 +107,24 @@ class NewApp extends Component {
 
     return (
       <div className="app">
-        <div className="dragarea" />
-        <div className="leftside">
-          <header className="header area">
+        <header className="app__header">
+          <div className="app__branding">
+            <img src="assets/pl.svg" alt="Logo" className="app__logo" />
             <h1>
               {haveProjects ? project.name : 'Patternlab'}
-              {(haveProjects && projects.length > 1)
-                ? <button className="" onClick={this.openDrawer}>switch</button>
-                : ''
-              }
-              <button className="" onClick={this.addProject}>Add new</button>
             </h1>
-          </header>
-          <section className="content area">
-            {project ? <Project project={project} /> : <Empty /> }
-          </section>
-        </div>
+          </div>
+          <div className="">
+            {(haveProjects && projects.length > 1)
+              ? <button className="button" onClick={this.openDrawer}>Projects</button>
+              : ''
+            }
+            <button className="button" onClick={this.addProject}>Add project</button>
+          </div>
+        </header>
+        <section className="content area">
+          {project ? <Project project={project} /> : <Empty /> }
+        </section>
 
         <Modal showModal={showDownloadModal} hide={() => {}}><DownloadNode /></Modal>
         <Sidebar
@@ -130,6 +135,7 @@ class NewApp extends Component {
           <ProjectList
             projects={projects}
             select={this.selectProject}
+            current={this.state.currentId}
           />
         </Sidebar>
       </div>

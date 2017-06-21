@@ -17,8 +17,9 @@ const createWindow = async () => {
     height: 400,
     resizable: true,
     fullscreenable: false,
-    backgroundColor: '#29ABE2',
+    backgroundColor: '#FFF',
     center: true,
+    movable: true,
     title: 'PatternLab Desktop',
     titleBarStyle: 'hidden',
     webPreferences: {

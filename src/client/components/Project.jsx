@@ -4,8 +4,7 @@ import { spawn } from 'child_process';
 import { parseOutput } from '../utils/patternlabHelper.js';
 
 const { shell } = require('electron');
-
-// @TODO Check if npm install is executed.
+const debug = require('debug')('pl');
 
 class Project extends Component {
   constructor() {
@@ -26,11 +25,13 @@ class Project extends Component {
   openExternal() {
     if (this.state.running && this.state.runtime.local) {
       shell.openExternal(this.state.runtime.local);
+      debug('Open external browser');
     }
   }
 
   openFolder() {
     shell.showItemInFolder(this.props.project.path);
+    debug('Open file explorer');
   }
 
   startProject() {
@@ -43,7 +44,9 @@ class Project extends Component {
 
     if (running) {
       this.currentSpawn.kill();
+      debug('Killing project');
     } else {
+      debug('Starting project');
       this.currentSpawn = spawn('npm', args);
       this.currentSpawn.stdout.on('data', (data) => {
         // console.log(`stdout: ${data}`);
@@ -80,18 +83,17 @@ class Project extends Component {
           <li>External address: {this.state.runtime.external ? this.state.runtime.external : ''}</li>
           <li>Browsersync address: {this.state.runtime.ui ? this.state.runtime.ui : ''}</li>
         </ul>
-        <pre>
-          <code>{JSON.stringify(this.state.runtime, null, 2)}</code>
-        </pre>
 
         <div className="project__bottom">
-          <button className="button--icon" onClick={this.startProject}>{this.state.running ? 'Stop' : 'Start'}</button>
+          <button className="button" onClick={this.startProject}>
+            {this.state.running ? 'Stop' : 'Start'}
+          </button>
           <button
-            className="button--icon"
-            onClick={() => { Project.openFolder(project.path); }}
+            className="button"
+            onClick={() => { this.openFolder(project.path); }}
           >Open folder</button>
           <button
-            className="button--icon"
+            className="button"
             onClick={() => { this.openExternal(); }}
           >Open browser</button>
         </div>

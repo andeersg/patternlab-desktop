@@ -46,6 +46,7 @@
     "dependencies": {
         "classnames": "^2.2.5",
         "command-exists": "^1.2.2",
+        "debug": "^2.6.8",
         "decompress": "^4.2.0",
         "electron-compile": "^6.4.1",
         "electron-config": "^1.0.0",
