@@ -9,6 +9,7 @@ import request from 'request';
 import decompress from 'decompress';
 
 const { dialog, app } = require('electron').remote;
+const debug = require('debug')('pl');
 
 export function checkEmptyness(path) {
   const files = fs.readdirSync(path);
@@ -20,6 +21,7 @@ export function checkEmptyness(path) {
 }
 
 export function validateProject(path) {
+  debug('Validating project');
   const files = fs.readdirSync(path);
   let projectType = false;
   const requiredFiles = [
@@ -52,10 +54,12 @@ export function validateProject(path) {
  * Returns a promise that throws an error if command is not found.
  */
 export function packageManagerIsInstalled() {
+  debug('Checking if NPM command is present');
   return commandExists('npm');
 }
 
 function npmInstall(project) {
+  debug('Run NPM install');
   return new Promise((resolve, reject) => {
     const args = [
       'install',
@@ -65,8 +69,11 @@ function npmInstall(project) {
 
     const npmSpawn = spawnSync('npm', args);
     if (npmSpawn.status > 0) {
+      debug('Unable to install dependencies');
       return reject('Unable to install dependencies.');
     }
+
+    debug('NPM dependencies installed');
     return resolve(project);
   });
 }
@@ -147,6 +154,8 @@ function fetchTasks(project) {
 }
 
 export function addProject(path = false) {
+  debug('Add new project');
+
   return new Promise((resolve) => {
     if (path) {
       // Check path.
@@ -162,6 +171,8 @@ export function addProject(path = false) {
     return folder;
   })
   .then((folder) => {
+    debug(`Check if "${folder}" is empty`);
+
     const projectObject = {};
     const empty = checkEmptyness(folder);
     projectObject.status = empty;
@@ -172,9 +183,11 @@ export function addProject(path = false) {
     projectObject.added = Date.now();
 
     if (!empty) {
+      debug(`Validating "${folder}"`);
       const validProject = validateProject(folder);
       if (validProject) {
         projectObject.type = validProject;
+        debug(`"${folder}" is valid.`);
       } else {
         throw new Error('Invalid project');
       }
@@ -187,8 +200,5 @@ export function addProject(path = false) {
     return saveProjectFiles(projectObject);
   })
   .then(projectObject => npmInstall(projectObject))
-  .then(projectObject => fetchTasks(projectObject))
-  .catch((error) => {
-    console.log(error);
-  });
+  .then(projectObject => fetchTasks(projectObject));
 }

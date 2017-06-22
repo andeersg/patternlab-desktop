@@ -75,14 +75,6 @@ class Project extends Component {
 
     return (
       <article className="project">
-        <ul>
-          <li>Running: {this.state.running ? 'Running' : 'Stopped'}</li>
-          <li>Type: {project.type}</li>
-          <li>Created: {project.added}</li> {/* @TODO Use moment.js */}
-          <li>Local address: {this.state.runtime.local ? this.state.runtime.local : ''}</li>
-          <li>External address: {this.state.runtime.external ? this.state.runtime.external : ''}</li>
-          <li>Browsersync address: {this.state.runtime.ui ? this.state.runtime.ui : ''}</li>
-        </ul>
 
         <div className="project__bottom">
           <button className="button" onClick={this.startProject}>
@@ -96,6 +88,16 @@ class Project extends Component {
             className="button"
             onClick={() => { this.openExternal(); }}
           >Open browser</button>
+        </div>
+
+        <div className="project__sidebar">
+          <ul>
+            <li>Running: {this.state.running ? 'Running' : 'Stopped'}</li>
+            <li>Created: {project.added}</li> {/* @TODO Use moment.js */}
+            <li>Local: {this.state.runtime.local ? this.state.runtime.local : ''}</li>
+            <li>External: {this.state.runtime.external ? this.state.runtime.external : ''}</li>
+            <li>Browsersync: {this.state.runtime.ui ? this.state.runtime.ui : ''}</li>
+          </ul>
         </div>
 
       </article>

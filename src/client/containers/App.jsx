@@ -17,7 +17,7 @@ const config = new Config({
 });
 
 
-class NewApp extends Component {
+class App extends Component {
   constructor() {
     super();
 
@@ -70,6 +70,8 @@ class NewApp extends Component {
     const self = this;
     addProject()
       .then((object) => {
+        debug(`"${object.path}" is added.`);
+
         // Store object.
         const projects = this.state.projects;
         const updatedState = {};
@@ -87,12 +89,11 @@ class NewApp extends Component {
       .catch((error) => {
         // Error handling.
         // @TODO Display this error somewhere.
-        console.error(error);
+        debug(`Error: ${error}`);
       });
   }
 
   render() {
-    debug('Render debugging');
     // Nice to know if we have projects or not.
     const haveProjects = this.state.projects.length > 0;
 
@@ -143,10 +144,4 @@ class NewApp extends Component {
   }
 }
 
-export default NewApp;
-
-// @TODO Add a project chooser.
-// @TODO Figure out what to use main area for.
-// @TODO We can have buttons for Watch(start), Build, Open static version in browser,
-// open finder, configure, delete.
-// @TODO Add a modal component.
+export default App;
