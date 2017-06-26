@@ -57,38 +57,19 @@
   }
 }
 
-.modal {
+.download {
   position: fixed;
-  z-index: 500;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-  font-size: 18px;
+  z-index: 900;
+  background-color: #FFF;
 
-  &__content {
-    width: 80vw;
-    height: 80vh;
-    background-color: #FFF;
-    position: absolute;
-    top: 10vh;
-    left: 10vw;
-    z-index: 502;
-    border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-
-  &__backdrop {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background-color: rgba(0, 0, 0, 0.3);
-    z-index: 501;
-  }
-
+  font-size: 16px;
 }

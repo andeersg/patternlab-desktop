@@ -23,31 +23,37 @@ export function checkEmptyness(path) {
 export function validateProject(path) {
   debug('Validating project');
   const files = fs.readdirSync(path);
-  let projectType = false;
+
+  const output = {
+    valid: true,
+    modulesInstalled: false,
+    type: '',
+  };
+
   const requiredFiles = [
     'patternlab-config.json',
     'package.json',
   ];
 
-  let requiredFilesPresent = true;
-
   requiredFiles.forEach((fileName) => {
     if (files.indexOf(fileName) === -1) {
-      requiredFilesPresent = false;
+      output.valid = false;
     }
   });
 
   if (files.indexOf('gulpfile.js') !== -1) {
-    projectType = 'gulp';
+    output.type = 'gulp';
   } else if (files.indexOf('Gruntfile.js') !== -1) {
-    projectType = 'grunt';
+    output.type = 'grunt';
+  } else {
+    output.valid = false;
   }
 
-  if (requiredFilesPresent && projectType) {
-    return projectType;
+  if (files.indexOf('node_modules') !== -1) {
+    output.modulesInstalled = true;
   }
 
-  return false;
+  return output;
 }
 
 /**
@@ -153,8 +159,10 @@ function fetchTasks(project) {
   });
 }
 
-export function addProject(path = false) {
+export function addProject(path = false, updateLoading) {
   debug('Add new project');
+
+  updateLoading('Setting up new project');
 
   return new Promise((resolve) => {
     if (path) {
@@ -172,21 +180,27 @@ export function addProject(path = false) {
   })
   .then((folder) => {
     debug(`Check if "${folder}" is empty`);
+    updateLoading('Check if folder is ready');
 
     const projectObject = {};
     const empty = checkEmptyness(folder);
+
     projectObject.status = empty;
     projectObject.id = shortid.generate();
-
     projectObject.path = folder;
     projectObject.name = folder.substr(folder.lastIndexOf('/') + 1);
     projectObject.added = Date.now();
 
     if (!empty) {
       debug(`Validating "${folder}"`);
+
       const validProject = validateProject(folder);
-      if (validProject) {
-        projectObject.type = validProject;
+
+      updateLoading('Validating folder');
+
+      if (validProject.valid) {
+        projectObject.type = validProject.type;
+        projectObject.modules = validProject.modulesInstalled;
         debug(`"${folder}" is valid.`);
       } else {
         throw new Error('Invalid project');
@@ -197,8 +211,17 @@ export function addProject(path = false) {
     // @TODO For v1 we just use Gulp.
     projectObject.type = 'gulp';
 
+    updateLoading('Downloading PatternLab');
+
     return saveProjectFiles(projectObject);
   })
-  .then(projectObject => npmInstall(projectObject))
+  .then((projectObject) => {
+    if (projectObject.modules) {
+      debug('node_modules present, skipping npm install');
+      return projectObject;
+    }
+    updateLoading('Installing dependencies');
+    return npmInstall(projectObject);
+  })
   .then(projectObject => fetchTasks(projectObject));
 }
