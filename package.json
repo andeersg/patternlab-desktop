@@ -2,7 +2,7 @@
     "name": "patternlab-desktop",
     "productName": "patternlab-desktop",
     "version": "1.0.0",
-    "description": "My Electron application description",
+    "description": "Manage Patternlab projects through a visual interface",
     "main": "src/index.js",
     "scripts": {
         "start": "electron-forge start",
