@@ -1,7 +1,7 @@
 {
     "name": "patternlab-desktop",
     "productName": "patternlab-desktop",
-    "version": "1.0.0",
+    "version": "1.0.0-alpha.1",
     "description": "Manage Patternlab projects through a visual interface",
     "main": "src/index.js",
     "scripts": {
