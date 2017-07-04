@@ -9,7 +9,7 @@ let mainWindow;
 
 const isDevMode = process.execPath.match(/[\\/]electron/);
 
-if (isDevMode) enableLiveReload({strategy: 'react-hmr'});
+if (isDevMode) enableLiveReload({ strategy: 'react-hmr' });
 
 // Fix path on MacOS.
 fixPath();

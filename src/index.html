@@ -28,6 +28,7 @@ if (module.hot) {
 
 window.onerror = function(error, url, line) {
   // @TODO Call insight function for tracking exceptions.
+  console.log('We caught an error!');
   console.log(error);
 };
 </script>
