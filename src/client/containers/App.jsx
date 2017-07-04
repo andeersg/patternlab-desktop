@@ -24,7 +24,7 @@ class App extends Component {
     const projects = desktop.config.get('projects');
     let currentId = desktop.config.get('currentId', false);
 
-    if (!currentId) {
+    if (!currentId && projects.length) {
       currentId = projects[0].id;
     }
 
@@ -51,7 +51,8 @@ class App extends Component {
     .then(() => {
       desktop.config.set('packageManagerIsInstalled', true);
     })
-    .catch(() => {
+    .catch((error) => {
+      console.log(error);
       // @TODO Show warning if npm command is missing.
       this.setState({
         packageManagerIsInstalled: false,

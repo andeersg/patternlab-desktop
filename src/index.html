@@ -6,7 +6,6 @@
 </head>
 <body style="overflow: hidden; margin: 0">
   <div id="App"></div>
-
 </body>
 
 <script type="text/jsx">
@@ -26,5 +25,10 @@ render();
 if (module.hot) {
   module.hot.accept(render);
 }
+
+window.onerror = function(error, url, line) {
+  // @TODO Call insight function for tracking exceptions.
+  console.log(error);
+};
 </script>
 </html>

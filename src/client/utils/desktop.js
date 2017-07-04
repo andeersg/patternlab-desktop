@@ -1,6 +1,6 @@
-import Config from 'electron-config';
+import Store from 'electron-store';
 
-const config = new Config({
+const config = new Store({
   defaults: {
     projects: [],
     packageManagerIsInstalled: false,

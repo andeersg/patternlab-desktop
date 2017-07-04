@@ -1,8 +1,8 @@
 {
-    "name": "patternlab-desktop",
-    "productName": "patternlab-desktop",
+    "name": "exampletest",
+    "productName": "exampletest",
     "version": "1.0.0",
-    "description": "Manage Patternlab projects through a visual interface",
+    "description": "My Electron application description",
     "main": "src/index.js",
     "scripts": {
         "start": "electron-forge start",
@@ -29,7 +29,7 @@
             },
             "electronPackagerConfig": {},
             "electronWinstallerConfig": {
-                "name": "patternlab_desktop"
+                "name": "exampletest"
             },
             "electronInstallerDebian": {},
             "electronInstallerRedhat": {},
@@ -39,7 +39,7 @@
             },
             "windowsStoreConfig": {
                 "packageName": "",
-                "name": "patternlabdesktop"
+                "name": "exampletest"
             }
         }
     },
@@ -49,8 +49,9 @@
         "debug": "^2.6.8",
         "decompress": "^4.2.0",
         "electron-compile": "^6.4.1",
-        "electron-config": "^1.0.0",
         "electron-devtools-installer": "^2.0.1",
+        "electron-store": "^1.2.0",
+        "fix-path": "^2.1.0",
         "get-grunt-tasks": "^3.1.0",
         "get-gulp-tasks": "^4.0.0",
         "mv": "^2.1.1",
@@ -64,18 +65,19 @@
         "uuid": "^3.1.0"
     },
     "devDependencies": {
+        "babel-eslint": "^7.2.3",
         "babel-plugin-transform-async-to-generator": "^6.24.1",
         "babel-plugin-transform-es2015-classes": "^6.24.1",
         "babel-plugin-transform-object-rest-spread": "^6.23.0",
-        "babel-preset-env": "^1.5.1",
+        "babel-preset-env": "^1.5.2",
         "babel-preset-react": "^6.24.1",
         "electron-prebuilt-compile": "1.6.11",
         "eslint": "^3.19.0",
         "eslint-config-airbnb": "^15.0.1",
-        "eslint-config-react-app": "^1.0.4",
-        "eslint-plugin-flowtype": "^2.34.0",
-        "eslint-plugin-import": "^2.3.0",
-        "eslint-plugin-jsx-a11y": "^5.0.3",
-        "eslint-plugin-react": "^7.0.1"
+        "eslint-config-react-app": "^1.0.5",
+        "eslint-plugin-flowtype": "^2.34.1",
+        "eslint-plugin-import": "^2.6.1",
+        "eslint-plugin-jsx-a11y": "^6.0.2",
+        "eslint-plugin-react": "^7.1.0"
     }
 }

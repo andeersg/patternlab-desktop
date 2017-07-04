@@ -1,6 +1,8 @@
 /* globals desktop */
 import ua from 'universal-analytics';
 
+const debug = require('debug')('pl:insight');
+
 const Insight = () => {};
 
 export default Insight;
@@ -17,7 +19,20 @@ function createUserId() {
 /**
  * Send events to Google Analytics.
  */
-Insight.sendEvent = (category, action, label, value) => {};
+Insight.sendEvent = (category, action, label, value) => {
+  const params = {
+    t: 'event',
+    ec: category,
+    ea: action,
+  };
+  if (label !== null && label !== undefined) {
+    params.el = label;
+  }
+  if (value !== null && label !== undefined) {
+    params.ev = value;
+  }
+  return this.send(params);
+};
 
 /**
  * Check if Analytics is enabled.
@@ -38,12 +53,19 @@ Insight.disable = () => {
   desktop.config.set('insight.disabled', true);
 };
 
+/**
+ * Send the data to GA.
+ */
 Insight.send = (params) => {
   if (this.isDisabled()) {
     return;
   }
 
   // Send that stuff
+  if (params.t === 'event') {
+    debug('Send GA Event');
+    this.visitor.event(params).send();
+  }
 };
 
 /**
