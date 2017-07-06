@@ -1,4 +1,5 @@
 # Pattern Lab Desktop
+[![Build Status](https://travis-ci.org/andeersg/patternlab-desktop.svg?branch=master)](https://travis-ci.org/andeersg/patternlab-desktop)
 
 A small application that allows you to use Pattern Lab without using the command line.
 
