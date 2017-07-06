@@ -32,7 +32,7 @@ class App extends Component {
       showAddDialog: false,
       projects,
       loaded: false,
-      packageManagerIsInstalled: desktop.config.get('packageManagerIsInstalled'),
+      packageManagerIsInstalled: desktop.config.get('packageManagerIsInstalled', false),
       showProjectList: false,
       currentId,
       loading: false,
@@ -41,7 +41,7 @@ class App extends Component {
   }
 
   componentDidMount() {
-    if (!desktop.config.get('packageManagerIsInstalled')) {
+    if (!this.state.packageManagerIsInstalled) {
       this.checkPM();
     }
   }
@@ -50,10 +50,11 @@ class App extends Component {
     packageManagerIsInstalled()
     .then(() => {
       desktop.config.set('packageManagerIsInstalled', true);
+      this.setState({
+        packageManagerIsInstalled: true,
+      });
     })
-    .catch((error) => {
-      console.log(error);
-      // @TODO Show warning if npm command is missing.
+    .catch(() => {
       this.setState({
         packageManagerIsInstalled: false,
       });
